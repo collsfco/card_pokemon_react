@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react"
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+//import "./App.css";
+import Card from "./Card"
 
 function App() {
-  const [count, setCount] = useState(0)
+ 
+  const [pokemonData, setPokemonData] = useState({});
+  const [randomNumber, setrandomNumber] = useState(getRandom());
+  
+  //https://pokeapi.co/api/v2/pokemon/ditto
+
+  function getRandom(){
+    return Math.floor(Math.random() * 150);
+  }
+
+  function handleClick(){
+    setrandomNumber(getRandom())
+  }
+   
+ React.useEffect(function () {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`)
+      .then((res) => res.json())
+      .then((data) => setPokemonData(data));
+     
+  },[randomNumber]);
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+    <main>
+      {pokemonData.name && 
+      <Card 
+      img={pokemonData.sprites.other.dream_world.front_default}
+      name={pokemonData.name}
+      hp={`${pokemonData.stats[0].base_stat}${pokemonData.stats[0].stat.name}` }
+      experience={pokemonData.base_experience}
+      attack={pokemonData.stats[1].base_stat}
+      defense={pokemonData.stats[2].base_stat}
+      special_attack={pokemonData.stats[3].base_stat}
+      fun={handleClick}
+      />}
+    </main>
+  );
 }
 
-export default App
+export default App;
